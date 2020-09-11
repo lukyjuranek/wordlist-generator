@@ -29,7 +29,6 @@ def main():
 	birth_day = input("Day of birth (DD): ")
 	other = input("Other keywords (keyword1,keyword2,...): ")
 	print("=================================")
-	# TODO: other keywords
 	
 	# Creates keywords
 	names = [first_name, first_name.lower(), last_name, last_name.lower(), nickname, nickname.lower()]
@@ -49,12 +48,11 @@ def main():
 	keywords = [string for string in keywords if string != ""]
 	# Sorts the list
 	keywords.sort()
-	# print(keywords)
 	combs = []
 	# TODO: function that creates keywords
 
 	start = time.time()
-	# Start loading animation
+	# Starts the loading animation
 	t = threading.Thread(target=animate)
 	t.start()
 	# Creates combinations
@@ -74,8 +72,7 @@ def main():
 
 	# Measures the execution time
 	end = time.time()
-	# Stop loading animation
-	# time.sleep(10)
+	# Stops the loading animation
 	doneLoading = True
 	# Print info
 	print("\nAmount of passwords: {}".format(len(combs)))
@@ -104,11 +101,10 @@ def file_size(fname):
 	return statinfo.st_size/1000000
 
 def animate():
-    # for c in itertools.cycle(['|', '/', '-', '\\']):
 	for c in itertools.cycle(['.    ', '..   ', '...  ', '.... ', '.....']):
 		if doneLoading:
 			break
-		sys.stdout.write('\rCreating passwords ' + c)
+		sys.stdout.write('\rCreating passwords (this may take a while) ' + c)
 		sys.stdout.flush()
 		time.sleep(0.1)
     # sys.stdout.write('\rDone!\n')
