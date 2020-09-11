@@ -82,6 +82,7 @@ def main():
 
 
 def makes_sense(password):
+	'''Returns True the password makes sense'''
 	if password.startswith(("-","_",".")) or password.endswith(("-","_",".")):
 		return False
 	elif any(s in password for s in (".-","._","-.","-_","_.","_-")):
@@ -101,6 +102,7 @@ def file_size(fname):
 	return statinfo.st_size/1000000
 
 def animate():
+	'''Makes the loading animation'''
 	for c in itertools.cycle(['.    ', '..   ', '...  ', '.... ', '.....']):
 		if doneLoading:
 			break
