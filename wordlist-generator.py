@@ -8,9 +8,19 @@ import sys
 
 doneLoading = False
 
+class colors:
+    purple = '\033[95m'
+    blue = '\033[94m'
+    cyan = '\033[96m'
+    green = '\033[92m'
+    warning = '\033[93m'
+    red = '\033[91m'
+    end = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 def main():
 	global doneLoading
-	
 	# For testing purposes
 	first_name = "First"
 	middle_name = "Middle"
@@ -37,7 +47,7 @@ def main():
 		dates.append(birth_month[1:])
 	if birth_day.startswith("0"):
 		dates.append(birth_day[1:])
-	numbers = ["123", "1234", "12345", "007", "321", "54321", "4321", "-", "_", "."]
+	numbers = ["123", "1234", "12345", "007", "321", "54321", "4321", "-", "_", ".", "#"]
 	extended_numbers = ["12", "123456789", "1234567890", "987654321", "0987654321"]
 	other_keywords = other.split(",")
 	keywords = names + dates + numbers + other_keywords
@@ -75,31 +85,34 @@ def main():
 	# Stops the loading animation
 	doneLoading = True
 	# Print info
-	print("\nAmount of passwords: {}".format(len(combs)))
-	print("Created in: " + str(end - start)[:5] + " seconds")
-	print("Filesize: " + str(file_size("wordlist.txt")) + " MB")
-	print("Filename name: wordlist.txt")
+	print("\nAmount of passwords: {}{}{}".format(colors.blue, f'{len(combs):,}', colors.end))
+	print("Created in: " + colors.blue + str(end - start)[:5] + " seconds" + colors.end)
+	print("Filesize: " + colors.blue + str(file_size("wordlist.txt")) + " MB" + colors.end)
+	print("Filename name: {}{}wordlist.txt{}".format(colors.UNDERLINE, colors.green, colors.end))
 
 
 def makes_sense(password):
-	'''Returns True the password makes sense'''
+	'''Returns True if the password makes sense'''
 
-	alphabet = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 'A', 'B', 'C', 'D', 'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+	letters = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 'A', 'B', 'C', 'D', 'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+	numbers = ("1","2","3","4","5","6","7","8","9","0")
 
-	if password.startswith(("-","_",".")) or password.endswith(("-","_",".")):
+	if password.startswith(("-","_",".","#")) or password.endswith(("-","_",".")):
 		return False
 	elif any(s in password for s in (".-","._","-.","-_","_.","_-")):
 		# abcd.-123
 		return False
-	elif any(s in password for s in (".","_","-")) and password.startswith(("1","2","3","4","5","6","7","8","9","0")) and password.endswith(("1","2","3","4","5","6","7","8","9","0")):
+	elif any(s in password for s in (".","_","-")) and password.startswith(numbers) and password.endswith(numbers):
 		# 123-123
 		return False
-	elif any(s in password for s in alphabet) and password.startswith(("1","2","3","4","5","6","7","8","9","0")) and password.endswith(("1","2","3","4","5","6","7","8","9","0")):
+	elif any(s in password for s in letters) and password.startswith(numbers) and password.endswith(numbers):
 		# 123abc123
 		return False
-	elif any(s in password for s in ("007",)) and password.startswith(("1","2","3","4","5","6","7","8","9","0")) and password.endswith(("1","2","3","4","5","6","7","8","9","0")):
+	elif any(s in password for s in ("007",)) and password.startswith(numbers) and password.endswith(numbers):
+		# 123abc007
 		return False
 	elif len(password)<=2:
+		# Smaller than 2 characters
 		return False
 	else:
 		return True
@@ -116,7 +129,7 @@ def animate():
 			break
 		sys.stdout.write('\rCreating passwords (this may take a while) ' + c)
 		sys.stdout.flush()
-		time.sleep(0.1)
+		time.sleep(0.2)
     # sys.stdout.write('\rDone!\n')
 
 if __name__ ==  "__main__":
