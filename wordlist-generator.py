@@ -12,22 +12,22 @@ def main():
 	global doneLoading
 	
 	# For testing purposes
-	# first_name = "First"
-	# middle_name = "Middle"
-	# last_name = "Last"
-	# nickname = "Nick"
-	# birth_year = "2022"
-	# birth_month = "07"
-	# birth_day = "04"
-	# other = ""
+	first_name = "First"
+	middle_name = "Middle"
+	last_name = "Last"
+	nickname = "Nick"
+	birth_year = "2022"
+	birth_month = "07"
+	birth_day = "04"
+	other = ""
 
-	first_name = input("First name: ")
-	nickname = input("Nickname: ")
-	last_name = input("Last name: ")
-	birth_year = input("Year of birth (YYYY): ")
-	birth_month = input("Month of birth (MM): ")
-	birth_day = input("Day of birth (DD): ")
-	other = input("Other keywords (keyword1,keyword2,...): ")
+	# first_name = input("First name: ")
+	# nickname = input("Nickname: ")
+	# last_name = input("Last name: ")
+	# birth_year = input("Year of birth (YYYY): ")
+	# birth_month = input("Month of birth (MM): ")
+	# birth_day = input("Day of birth (DD): ")
+	# other = input("Other keywords (keyword1,keyword2,...): ")
 	print("=================================")
 	
 	# Creates keywords
@@ -83,11 +83,19 @@ def main():
 
 def makes_sense(password):
 	'''Returns True the password makes sense'''
+
+	alphabet = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 'A', 'B', 'C', 'D', 'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+
 	if password.startswith(("-","_",".")) or password.endswith(("-","_",".")):
 		return False
 	elif any(s in password for s in (".-","._","-.","-_","_.","_-")):
+		# abcd.-123
 		return False
 	elif any(s in password for s in (".","_","-")) and password.startswith(("1","2","3","4","5","6","7","8","9","0")) and password.endswith(("1","2","3","4","5","6","7","8","9","0")):
+		# 123-123
+		return False
+	elif any(s in password for s in alphabet) and password.startswith(("1","2","3","4","5","6","7","8","9","0")) and password.endswith(("1","2","3","4","5","6","7","8","9","0")):
+		# 123abc123
 		return False
 	elif any(s in password for s in ("007",)) and password.startswith(("1","2","3","4","5","6","7","8","9","0")) and password.endswith(("1","2","3","4","5","6","7","8","9","0")):
 		return False
