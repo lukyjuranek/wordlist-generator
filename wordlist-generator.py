@@ -11,8 +11,7 @@ import sys
 doneLoading = False
 
 letters = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 'A', 'B', 'C', 'D', 'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
-numbers = ("1","2","3","4","5","6","7","8","9","0")
-
+numbers = ('1','2','3','4','5','6','7','8','9','0')
 
 class colors:
     purple = '\033[95m'
@@ -24,7 +23,6 @@ class colors:
     end = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-
 
 def main():
 	global doneLoading
@@ -128,7 +126,6 @@ def main():
 
 def makes_sense(password):
 	'''Returns True if the password makes sense'''
-
 	if len(password)<=2:
 		# Smaller than 2 characters
 		return False
@@ -164,8 +161,8 @@ def file_size(fname):
 def print_help():
 	print('\nUsage: wordlist-generator.py [options]')
 	print('\nOptions:\n')
-	print('{:^10}{:<11}{:<15}'.format('', '-o <file> ' ,': output file'))
-	print('{:^10}{:<11}{:<15}'.format('', '-h ' ,': show help'))
+	print('{:^10}{:<11}{:<15}'.format('', '-o <file> ' ,': output file (default: wordlist.txt)'))
+	print('{:^10}{:<11}{:<15}'.format('', '-h ' ,': show this help page'))
 
 def animate():
 	'''Makes the loading animation'''
