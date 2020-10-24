@@ -3,11 +3,16 @@ import itertools
 import time
 import os
 import re
+import getopt
 # Used for the loading animation
 import threading
 import sys
 
 doneLoading = False
+
+letters = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 'A', 'B', 'C', 'D', 'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+numbers = ("1","2","3","4","5","6","7","8","9","0")
+
 
 class colors:
     purple = '\033[95m'
@@ -20,25 +25,48 @@ class colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 def main():
 	global doneLoading
-	# For testing purposes
-	first_name = "First"
-	middle_name = "Middle"
-	last_name = "Last"
-	nickname = "Nick"
-	birth_year = "2022"
-	birth_month = "07"
-	birth_day = "04"
-	other = ""
 
-	# first_name = input("First name: ")
-	# nickname = input("Nickname: ")
-	# last_name = input("Last name: ")
-	# birth_year = input("Year of birth (YYYY): ")
-	# birth_month = input("Month of birth (MM): ")
-	# birth_day = input("Day of birth (DD): ")
-	# other = input("Other keywords (keyword1,keyword2,...): ")
+	outputfile = 'wordlist.txt'
+	test_input = False
+
+	# Command line arguments
+	argv = sys.argv[1:]
+	try:
+		opts, args = getopt.getopt(argv,"tho:")
+	except getopt.GetoptError:
+		print_help()
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print_help()
+			sys.exit()
+		elif opt in ("-t"):
+			test_input = True
+		elif opt in ("-o"):
+			outputfile = arg
+
+	if(test_input):
+		print("Running with test input")
+		# For testing purposes
+		first_name = "First"
+		middle_name = "Middle"
+		last_name = "Last"
+		nickname = "Nick"
+		birth_year = "2022"
+		birth_month = "07"
+		birth_day = "04"
+		other = ""
+	else:
+		first_name = input("First name: ")
+		nickname = input("Nickname: ")
+		last_name = input("Last name: ")
+		birth_year = input("Year of birth (YYYY): ")
+		birth_month = input("Month of birth (MM): ")
+		birth_day = input("Day of birth (DD): ")
+		other = input("Other keywords (keyword1,keyword2,...): ")
 	print("=================================")
 	
 	# Creates keywords
@@ -54,33 +82,35 @@ def main():
 	keywords = names + dates + numbers + other_keywords
 	common_words = ['qwerty', 'qwertz', 'asdfg', 'asdfgh']
 	
-	# Removes duplicate keywords
-	keywords = list(set(keywords))
-	# Removes blank keywords
-	keywords = [string for string in keywords if string != ""]
-	# Sorts the list
-	keywords.sort()
-	# The final list that's is written into a file
-	combs = []
+	
+	keywords = list(set(keywords)) # Removes duplicate keywords
+	keywords = [string for string in keywords if string != ""] # Removes blank keywords
+	keywords.sort() # Sorts the list
+	
+	combs = [] # The final list that's is written into a file
 	combs.append(common_words)
-	# TODO: function that creates keywords
 
-	start = time.time()
-	# Starts the loading animation
+	start = time.time() # Starts the timer
+	# Starts the thread with the loading animation
 	t = threading.Thread(target=animate)
+	t.daemon = True # Makes it possible to stop the thread with sys.exit()
 	t.start()
 	# Creates combinations
-	for i in range(1,6):
-		for combination in list(itertools.permutations(keywords, i)):
-			joined = ''.join(combination)
-			# Remove nonsense passwords
-			if makes_sense(joined):
-				combs.append(joined)
-			else:
-				continue
+	try:
+		for i in range(1,6):
+			for combination in list(itertools.permutations(keywords, i)):			
+					joined = ''.join(combination)
+					# Remove nonsense passwords
+					if makes_sense(joined):
+						combs.append(joined)
+					else:
+						continue
+	except (KeyboardInterrupt, SystemExit):
+		print(colors.red + "\nProgram stopped" + colors.end)
+		sys.exit()
 
 	# Write the wordlist into a file
-	with open('wordlist.txt', 'w') as f:
+	with open(outputfile, 'w') as f:
 		for item in combs:
 			f.write("%s\n" % item)
 
@@ -89,7 +119,8 @@ def main():
 	# Stops the loading animation
 	doneLoading = True
 	# Print info
-	print("\nAmount of passwords: {}{}{}".format(colors.blue, f'{len(combs):,}', colors.end))
+	formated_passwords_amount = format(len(combs), ",")
+	print("\nAmount of passwords: " + colors.blue + formated_passwords_amount + colors.end)
 	print("Created in: " + colors.blue + str(end - start)[:5] + " seconds" + colors.end)
 	print("Filesize: " + colors.blue + str(file_size("wordlist.txt")) + " MB" + colors.end)
 	print("Filename name: {}{}wordlist.txt{}".format(colors.UNDERLINE, colors.green, colors.end))
@@ -97,9 +128,6 @@ def main():
 
 def makes_sense(password):
 	'''Returns True if the password makes sense'''
-
-	letters = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 'A', 'B', 'C', 'D', 'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
-	numbers = ("1","2","3","4","5","6","7","8","9","0")
 
 	if len(password)<=2:
 		# Smaller than 2 characters
@@ -132,6 +160,12 @@ def file_size(fname):
 	'''Returns filesize in MB'''
 	statinfo = os.stat(fname)
 	return statinfo.st_size/1000000
+
+def print_help():
+	print('\nUsage: wordlist-generator.py [options]')
+	print('\nOptions:\n')
+	print('{:^10}{:<11}{:<15}'.format('', '-o <file> ' ,': output file'))
+	print('{:^10}{:<11}{:<15}'.format('', '-h ' ,': show help'))
 
 def animate():
 	'''Makes the loading animation'''
