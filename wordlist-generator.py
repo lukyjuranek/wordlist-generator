@@ -38,17 +38,17 @@ def main():
 		print_help()
 		sys.exit(2)
 	for opt, arg in opts:
-		if opt == '-h':
-			print_help()
-			sys.exit()
-		elif opt in ("-t"):
+		if opt in ("-t"):
 			test_input = True
 		elif opt in ("-o"):
 			outputfile = arg
+		elif opt == '-h':
+			print_help()
+			sys.exit()
 
 	if(test_input):
-		print("Running with test input")
 		# For testing purposes
+		print("Running with test input")
 		first_name = "First"
 		middle_name = "Middle"
 		last_name = "Last"
@@ -85,8 +85,8 @@ def main():
 	keywords = [string for string in keywords if string != ""] # Removes blank keywords
 	keywords.sort() # Sorts the list
 	
-	combs = [] # The final list that's is written into a file
-	combs.append(common_words)
+	final_list = [] # The final list that's written into a file
+	final_list.extend(common_words)
 
 	start = time.time() # Starts the timer
 	# Starts the thread with the loading animation
@@ -95,29 +95,24 @@ def main():
 	t.start()
 	# Creates combinations
 	try:
-		for i in range(1,6):
-			for combination in list(itertools.permutations(keywords, i)):			
-					joined = ''.join(combination)
-					# Remove nonsense passwords
-					if makes_sense(joined):
-						combs.append(joined)
-					else:
-						continue
+		for length in range(1,6):
+			final_list.extend(create_every_meaningful_combination(keywords, length))
+
 	except (KeyboardInterrupt, SystemExit):
 		print(colors.red + "\nProgram stopped" + colors.end)
 		sys.exit()
-
 	# Write the wordlist into a file
 	with open(outputfile, 'w') as f:
-		for item in combs:
+		for item in final_list:
 			f.write("%s\n" % item)
 
 	# Measures the execution time
 	end = time.time()
+	# t.join()
 	# Stops the loading animation
 	doneLoading = True
 	# Print info
-	formated_passwords_amount = format(len(combs), ",")
+	formated_passwords_amount = format(len(final_list), ",")
 	print("\nAmount of passwords: " + colors.blue + formated_passwords_amount + colors.end)
 	print("Created in: " + colors.blue + str(end - start)[:5] + " seconds" + colors.end)
 	print("Filesize: " + colors.blue + str(file_size("wordlist.txt")) + " MB" + colors.end)
@@ -152,6 +147,18 @@ def makes_sense(password):
 		return False
 	else:
 		return True
+
+
+def create_every_meaningful_combination(keywords, length):
+	meaningful_combinations = []	
+	for combination in list(itertools.permutations(keywords, length)):	
+		joined = ''.join(combination)
+		# Remove nonsense passwords
+		if makes_sense(joined):
+			meaningful_combinations.append(joined)
+		else:
+			continue
+	return meaningful_combinations
 
 def file_size(fname):
 	'''Returns filesize in MB'''
