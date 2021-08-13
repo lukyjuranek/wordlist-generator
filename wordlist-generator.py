@@ -25,98 +25,95 @@ class colors:
     UNDERLINE = '\033[4m'
 
 def main():
-	global doneLoading
+    global doneLoading # Lets me use doneLoading in main()
 
-	outputfile = 'wordlist.txt'
-	test_input = False
+    outputfile = 'wordlist.txt'
+    test_input = False
 
-	# Command line arguments
-	argv = sys.argv[1:]
-	try:
-		opts, args = getopt.getopt(argv,"tho:")
-	except getopt.GetoptError:
-		print_help()
-		sys.exit(2)
-	for opt, arg in opts:
-		if opt in ("-t"):
-			test_input = True
-		elif opt in ("-o"):
-			outputfile = arg
-		elif opt == '-h':
-			print_help()
-			sys.exit()
+    # Command line arguments
+    argv = sys.argv[1:]
+    try:
+    	opts, args = getopt.getopt(argv,"tho:")
+    except getopt.GetoptError:
+    	print_help()
+    	sys.exit(2)
+    for opt, arg in opts:
+    	if opt in ("-t"):
+    		test_input = True
+    	elif opt in ("-o"):
+    		outputfile = arg
+    	elif opt == '-h':
+    		print_help()
+    		sys.exit()
 
-	if(test_input):
-		# For testing purposes
-		print("Running with test input")
-		first_name = "First"
-		middle_name = "Middle"
-		last_name = "Last"
-		nickname = "Nick"
-		birth_year = "2022"
-		birth_month = "07"
-		birth_day = "04"
-		other = ""
-	else:
-		first_name = input("First name: ")
-		nickname = input("Nickname: ")
-		last_name = input("Last name: ")
-		birth_year = input("Year of birth (YYYY): ")
-		birth_month = input("Month of birth (MM): ")
-		birth_day = input("Day of birth (DD): ")
-		other = input("Other keywords (keyword1,keyword2,...): ")
-	print("=================================")
-	
-	# Creates keywords
-	names = [first_name, first_name.lower(), reverse(first_name), last_name, last_name.lower(), reverse(last_name), nickname, nickname.lower(), reverse(nickname)]
-	dates = [birth_year, birth_year[2:], birth_month, birth_day]
-	if birth_month.startswith("0"):
-		dates.append(birth_month[1:])
-	if birth_day.startswith("0"):
-		dates.append(birth_day[1:])
-	numbers = ["123", "1234", "12345", "007", "321", "54321", "4321", "-", "_", ".", "#"]
-	extended_numbers = ["12", "123456789", "1234567890", "987654321", "0987654321"]
-	other_keywords = other.split(",")
-	keywords = names + dates + numbers + other_keywords
-	common_words = ['qwerty', 'qwertz', 'asdfg', 'asdfgh']
-	
-	
-	keywords = list(set(keywords)) # Removes duplicate keywords
-	keywords = [string for string in keywords if string != ""] # Removes blank keywords
-	keywords.sort() # Sorts the list
-	
-	final_list = [] # The final list that's written into a file
-	final_list.extend(common_words)
+    if(test_input):
+    	# For testing purposes
+    	print("Running with test input")
+    	first_name = "First"
+    	middle_name = "Middle"
+    	last_name = "Last"
+    	nickname = "Nick"
+    	birth_year = "2022"
+    	birth_month = "07"
+    	birth_day = "04"
+    	other = ""
+    else:
+    	first_name = input("First name: ")
+    	nickname = input("Nickname: ")
+    	last_name = input("Last name: ")
+    	birth_year = input("Year of birth (YYYY): ")
+    	birth_month = input("Month of birth (MM): ")
+    	birth_day = input("Day of birth (DD): ")
+    	other = input("Other keywords (keyword1,keyword2,...): ")
+    print("=================================")
 
-	start = time.time() # Starts the timer
-	# Starts the thread with the loading animation
-	t = threading.Thread(target=animate)
-	t.daemon = True # Makes it possible to stop the thread with sys.exit()
-	t.start()
-	# Creates combinations
-	try:
-		for length in range(1,6):
-			final_list.extend(create_every_meaningful_combination(keywords, length))
+    # Creates keywords
+    names = [first_name, first_name.lower(), reverse(first_name), last_name, last_name.lower(), reverse(last_name), nickname, nickname.lower(), reverse(nickname)]
+    dates = [birth_year, birth_year[2:], birth_month, birth_day]
+    if birth_month.startswith("0"):
+    	dates.append(birth_month[1:])
+    if birth_day.startswith("0"):
+    	dates.append(birth_day[1:])
+    numbers = ["123", "1234", "12345", "007", "321", "54321", "4321", "-", "_", ".", "#"]
+    extended_numbers = ["12", "123456789", "1234567890", "987654321", "0987654321"]
+    other_keywords = other.split(",")
+    keywords = names + dates + numbers + other_keywords
+    common_words = ['qwerty', 'qwertz', 'asdfg', 'asdfgh']
 
-	except (KeyboardInterrupt, SystemExit):
-		print(colors.red + "\nProgram stopped" + colors.end)
-		sys.exit()
-	# Write the wordlist into a file
-	with open(outputfile, 'w') as f:
-		for item in final_list:
-			f.write("%s\n" % item)
+    keywords = list(set(keywords)) # Removes duplicate keywords
+    keywords = [string for string in keywords if string != ""] # Removes blank keywords
+    keywords.sort() # Sorts the list
 
-	# Measures the execution time
-	end = time.time()
-	# t.join()
-	# Stops the loading animation
-	doneLoading = True
-	# Print info
-	formated_passwords_amount = format(len(final_list), ",")
-	print("\nAmount of passwords: " + colors.blue + formated_passwords_amount + colors.end)
-	print("Created in: " + colors.blue + str(end - start)[:5] + " seconds" + colors.end)
-	print("Filesize: " + colors.blue + str(file_size("wordlist.txt")) + " MB" + colors.end)
-	print("Filename name: {}{}wordlist.txt{}".format(colors.UNDERLINE, colors.green, colors.end))
+    final_list = list(common_words)
+    start = time.time() # Starts the timer
+    # Starts the thread with the loading animation
+    t = threading.Thread(target=animate)
+    t.daemon = True # Makes it possible to stop the thread with sys.exit()
+    t.start()
+    # Creates combinations
+    try:
+    	for length in range(1,6):
+    		final_list.extend(create_every_meaningful_combination(keywords, length))
+
+    except (KeyboardInterrupt, SystemExit):
+    	print(colors.red + "\nProgram stopped" + colors.end)
+    	sys.exit()
+    # Write the wordlist into a file
+    with open(outputfile, 'w') as f:
+    	for item in final_list:
+    		f.write("%s\n" % item)
+
+    # Measures the execution time
+    end = time.time()
+    # t.join()
+    # Stops the loading animation
+    doneLoading = True
+    # Print info
+    formated_passwords_amount = format(len(final_list), ",")
+    print("\nAmount of passwords: " + colors.blue + formated_passwords_amount + colors.end)
+    print("Created in: " + colors.blue + str(end - start)[:5] + " seconds" + colors.end)
+    print("Filesize: " + colors.blue + str(file_size("wordlist.txt")) + " MB" + colors.end)
+    print("Filename name: {}{}wordlist.txt{}".format(colors.UNDERLINE, colors.green, colors.end))
 
 
 def makes_sense(password):
